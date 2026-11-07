@@ -10,7 +10,7 @@ Aplicación web para practicar inglés y ubicar al alumno en un nivel **básico,
 | Registro e inicio de sesión | Listo |
 | Menú principal | Listo |
 | Simulador de práctica (20 preguntas, 1 min c/u, hasta 5 intentos) | Listo |
-| Simulador final (40 preguntas, hasta 2 intentos, cada reactivo = 2.5 pts) | Pendiente |
+| Simulador final (40 preguntas, hasta 2 intentos, cada reactivo = 2.5 pts) | Listo |
 | Datos simulados | Pendiente |
 | Dashboard (práctica vs. final) | Pendiente |
 
@@ -113,11 +113,13 @@ app/
   models/                     M — acceso a datos y reglas de negocio
     usuario_model.py
     pregunta_model.py         selección aleatoria sin repetir
-    practica_model.py         intentos, control del minuto, calificación y nivel
+    practica_model.py         intentos de práctica, control del minuto, calificación y nivel
+    final_model.py            lo mismo para el examen final (tablas *_finales)
   controllers/                C — rutas (blueprints de Flask)
     auth_controller.py        /registro  /login  /logout
     menu_controller.py        /menu
     practica_controller.py    /practica/...
+    final_controller.py       /final/...
   views/templates/            V — plantillas HTML (Jinja)
   static/                     CSS y JavaScript
 database/
@@ -133,6 +135,22 @@ database/
 - Máximo **5 intentos** por usuario. Si hay un examen sin terminar, el menú permite continuarlo.
 - Las opciones se muestran en orden aleatorio.
 - **Nivel alcanzado:** el más alto en el que el alumno logra al menos 70 % de las preguntas de ese nivel, exigiéndolo también en los niveles inferiores (Básico → Intermedio → Avanzado). Está implementado en `finalizar()` de `practica_model.py`.
+
+## Reglas del simulador final
+
+- Cada intento sortea **40 preguntas al azar**: 12 Básico, 18 Intermedio y 10 Avanzado. No se repiten dentro de la misma prueba.
+- Máximo **2 intentos** por usuario. Cada pregunta vale **2.5 puntos** (100 / 40) y se aprueba con **70 % o más**.
+- Funciona igual que la práctica: 60 segundos por pregunta controlados por el servidor, opciones en orden aleatorio, continuar un examen abierto y resultado con porcentaje, aprobado y nivel.
+- El nivel se calcula con la misma regla que en la práctica, para que ambos exámenes sean comparables en el dashboard.
+
+**Modo prueba (10 preguntas):** para probar sin tardar 40 minutos, arranca la app con la variable `FINAL_MODO_PRUEBA=1`. En PowerShell:
+
+```powershell
+$env:FINAL_MODO_PRUEBA = "1"
+python run.py
+```
+
+Sin la variable, el examen es el real de 40 preguntas. Los intentos de prueba se guardan en la BD como cualquier otro; si te quedas sin intentos, borra los registros de `intentos_finales` de tu usuario o vuelve a cargar el script de `database/`.
 
 Los parámetros (cantidad por nivel, segundos, intentos, porcentaje aprobatorio) están en `config.py`.
 
