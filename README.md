@@ -99,6 +99,16 @@ python run.py
 
 Abre `http://localhost:5000`.
 
+### Crear usuarios de demostración
+
+Con los servicios iniciados, ejecuta:
+
+```powershell
+docker compose run --rm --no-deps web python -m database.crear_usuarios_demo
+```
+
+El script crea cinco cuentas con correos en formato `nombre.apellido@uadec.edu.mx`, cada una con cinco prácticas y dos exámenes finales completos. Genera contraseñas aleatorias de ocho dígitos y las muestra en la terminal; guárdalas, porque no se vuelven a mostrar. Si ya hay cuentas creadas por este script, se detiene para evitar duplicados.
+
 ## Funcionamiento
 
 1. El usuario se registra o inicia sesión.
